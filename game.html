@@ -36,7 +36,6 @@ body {
   overflow-y: auto;
 }
 
-/* Basic styles */
 h1 {
   text-align: center;
   margin-bottom: 20px;
@@ -113,7 +112,7 @@ button {
 
 <hr>
 
-<h2>Your Library</h2>
+<h2>Your Game Library</h2>
 <div id="library"></div>
 
 </div>
@@ -130,6 +129,7 @@ let games = [
   {id:3, title:"NBA 2K26", genre:"Sports", price:60}
 ];
 
+let userStore = {}
 function register(){
   let email = document.getElementById("regEmail").value;
   let pass = document.getElementById("regPass").value;
@@ -191,6 +191,7 @@ function buy(id){
   displayGames(games);
 }
 
+//the game library
 function loadLibrary(){
   let div = document.getElementById("library");
   div.innerHTML = "";
@@ -217,6 +218,27 @@ function searchGames(){
   });
 
   displayGames(filtered);
+}
+
+//fill the admin user table with the registered users
+function loadAdmin(){
+  if(!currentUser || currentUser.role !== "admin") return;
+ 
+  let tbody = document.getElementById("adminUserTable");
+  tbody.innerHTML = "";
+ 
+  // Loop through userStore and add a row for each user
+  Object.keys(userStore).forEach((email, i) => {
+    let u = userStore[email];
+    tbody.innerHTML += `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${u.username}</td>
+        <td>${email}</td>
+        <td>${u.role}</td>
+        <td>${u.purchases.length}</td>
+      </tr>`;
+  });
 }
 
 displayGames(games);
