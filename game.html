@@ -3,25 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <title>Mist Game Application</title>
-
+ 
 <style>
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
-
+ 
 body {
   font-family: Arial, sans-serif;
   height: 100vh;
 }
-
+ 
 /* Layout */
 .mainDiv {
   display: flex;
   height: 100vh;
 }
-
+ 
 .left-panel {
   width: 40%;
   background: #f0f0f0;
@@ -29,69 +29,75 @@ body {
   overflow-y: auto;
   border-right: 2px solid #999;
 }
-
+ 
 .right-panel {
   width: 60%;
   padding: 20px;
   overflow-y: auto;
 }
-
+ 
 h1 {
   text-align: center;
   margin-bottom: 20px;
 }
-
+ 
 .error { color: red; font-size: 0.9em; }
 .success { color: green; font-size: 0.9em; }
-
+ 
 input, select {
   width: 100%;
   margin-bottom: 10px;
   padding: 6px;
 }
-
+ 
 button {
   padding: 6px 10px;
   margin-top: 5px;
   cursor: pointer;
 }
-
+ 
 .gameBox {
   border: 1px solid #999;
   padding: 10px;
   margin-bottom: 10px;
 }
-
+ 
+table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9em; }
+th, td { border: 1px solid #999; padding: 6px 10px; text-align: left; }
+th { background: #ddd; }
 </style>
 </head>
-
+ 
 <body>
-
+ 
 <div class="mainDiv">
-
+ 
 <!-- LEFT PANEL -->
 <div class="left-panel">
-
+ 
 <h1>Mist</h1>
-
+ 
+<!-- Register form -->
 <h2>Register</h2>
-<input type="text" id="regUser" placeholder="Username">
-<input type="email" id="regEmail" placeholder="Email">
-<input type="password" id="regPass" placeholder="Password">
+<input type="text"     id="regUser"  placeholder="Username">
+<input type="email"    id="regEmail" placeholder="Email">
+<input type="password" id="regPass"  placeholder="Password">
 <button onclick="register()">Register</button>
 <div id="regMsg" class="success"></div>
-
+ 
 <hr>
-
+ 
+<!-- Login form: uses username and password -->
 <h2>Login</h2>
-<input type="email" id="loginEmail" placeholder="Email">
+<input type="text"     id="loginUser" placeholder="Username">
 <input type="password" id="loginPass" placeholder="Password">
 <button onclick="login()">Login</button>
 <button onclick="logout()">Logout</button>
 <div id="loginMsg" class="success"></div>
-
+ 
 <hr>
-
+ 
+<!-- Search form -->
 <h2>Search Games</h2>
 <input type="text" id="searchTitle" placeholder="Title">
 <select id="searchGenre">
@@ -101,126 +107,202 @@ button {
   <option>Sports</option>
 </select>
 <button onclick="searchGames()">Search</button>
-
+ 
 </div>
-
+ 
 <!-- RIGHT PANEL -->
 <div class="right-panel">
-
+ 
+<!-- Game catalogue -->
 <h2>Game Catalogue</h2>
 <div id="games"></div>
-
+ 
 <hr>
-
+ 
+<!-- Game library -->
 <h2>Your Game Library</h2>
 <div id="library"></div>
-
+ 
+<hr>
+ 
+<!-- Admin panel: only shown when logged in as admin -->
+<div id="adminPanel" style="display:none">
+  <h2>Admin Panel</h2>
+ 
+  <!-- User list table -->
+  <h3>User List</h3>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Username</th><th>Email</th><th>Role</th><th>Purchases</th></tr>
+    </thead>
+    <tbody id="adminUserTable"></tbody>
+  </table>
+ 
+  <br>
+ 
+  <!-- Add game form -->
+  <h3>Add Game</h3>
+  <input type="text"   id="adminTitle" placeholder="Game title">
+  <select id="adminGenre">
+    <option>Action</option>
+    <option>RPG</option>
+    <option>Sports</option>
+  </select>
+  <input type="number" id="adminPrice" placeholder="Price">
+  <button onclick="adminAddGame()">Add Game</button>
+  <div id="adminMsg" class="success"></div>
 </div>
-
+ 
 </div>
-
+</div>
+ 
 <script>
-
+ 
+// Tracks who is currently logged in
 let currentUser = null;
-
+ 
+// List of games in the catalogue
 let games = [
-  {id:1, title:"Apex legends", genre:"Action", price:10},
-  {id:2, title:"Pokemon Pearl", genre:"RPG", price:30},
-  {id:3, title:"NBA 2K26", genre:"Sports", price:60}
+  {id:1, title:"Apex Legends",  genre:"Action", price:10},
+  {id:2, title:"Pokemon Pearl", genre:"RPG",    price:30},
+  {id:3, title:"NBA 2K26",      genre:"Sports", price:60}
 ];
-
-let userStore = {}
+ 
+// In-memory user store — seeded with a default admin account for testing
+let userStore = {};
+userStore["Admin"] = { username:"Admin", email:"admin@mist.com", password:"Admin1234", role:"admin", purchases:[] };
+ 
+// Saves the new user to userStore
 function register(){
-  let email = document.getElementById("regEmail").value;
-  let pass = document.getElementById("regPass").value;
-
-  if(!email || !pass){
+  let username = document.getElementById("regUser").value;
+  let email    = document.getElementById("regEmail").value;
+  let pass     = document.getElementById("regPass").value;
+ 
+  if(!username || !email || !pass){
     alert("Fill all fields");
     return;
   }
-
-  localStorage.setItem(email, pass);
+ 
+  if(userStore[username]){
+    alert("Username already taken");
+    return;
+  }
+ 
+  userStore[username] = { username, email, password: pass, role:"user", purchases:[] };
   document.getElementById("regMsg").innerText = "Registered!";
 }
-
+ 
+// Checks credentials against userStore and logs the user in
 function login(){
-  let email = document.getElementById("loginEmail").value;
-  let pass = document.getElementById("loginPass").value;
-
-  if(localStorage.getItem(email) === pass){
-    currentUser = email;
-    document.getElementById("loginMsg").innerText = "Logged in!";
+  let username = document.getElementById("loginUser").value;
+  let pass     = document.getElementById("loginPass").value;
+ 
+  let u = userStore[username];
+  if(u && u.password === pass){
+    currentUser = { username: u.username, email: u.email, role: u.role };
+    document.getElementById("loginMsg").innerText = "Logged in as " + currentUser.username + "!";
+    // Show admin panel only if the user is an admin
+    document.getElementById("adminPanel").style.display =
+      u.role === "admin" ? "" : "none";
     loadLibrary();
+    loadAdmin();
+    displayGames(games);
   } else {
     alert("Invalid login");
   }
 }
-
+ 
+// Clears the current user and hides the admin panel
 function logout(){
   currentUser = null;
   document.getElementById("loginMsg").innerText = "Logged out";
+  document.getElementById("adminPanel").style.display = "none";
+  displayGames(games);
 }
-
+ 
+// Builds and displays the list of game boxes
 function displayGames(list){
   let div = document.getElementById("games");
   div.innerHTML = "";
-
+ 
   list.forEach(g=>{
-    let owned = localStorage.getItem(currentUser + "_game_" + g.id);
-
+    let u = currentUser ? userStore[currentUser.username] : null;
+    let owned = u && u.purchases.includes(g.id);
+ 
     div.innerHTML += `
       <div class="gameBox">
         <b>${g.title}</b><br>
         ${g.genre} - $${g.price}<br>
-        ${owned ? "Owned" : ""}
-        <br>
-        <button onclick="buy(${g.id})">Buy</button>
+        ${owned ? "Owned<br>" : ""}
+        <button onclick="buy(${g.id})">${owned ? "Download" : "Buy"}</button>
       </div>
     `;
   });
 }
-
+ 
+// Marks a game as purchased for the current user
 function buy(id){
   if(!currentUser){
     alert("Login first");
     return;
   }
-
-  localStorage.setItem(currentUser + "_game_" + id, true);
+ 
+  let u = userStore[currentUser.username];
+  if(!u.purchases.includes(id)) u.purchases.push(id);
+ 
   loadLibrary();
   displayGames(games);
 }
-
-//the game library
+ 
+// Simulates downloading a game by creating a text file
+function download(title){
+  let content = `You have downloaded: ${title}\nThank you for purchasing from Mist!`;
+  let blob = new Blob([content], { type:"text/plain" });
+  let a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = title + ".txt";
+  a.click();
+}
+ 
+// The game library
 function loadLibrary(){
   let div = document.getElementById("library");
   div.innerHTML = "";
-
+ 
   if(!currentUser){
     div.innerHTML = "Login to see library";
     return;
   }
-
-  games.forEach(g=>{
-    if(localStorage.getItem(currentUser + "_game_" + g.id)){
-      div.innerHTML += `<div>${g.title}</div>`;
-    }
+ 
+  let u = userStore[currentUser.username];
+  let owned = games.filter(g => u.purchases.includes(g.id));
+ 
+  if(!owned.length){ div.innerHTML = "No games yet."; return; }
+ 
+  // Show owned games with a download button
+  owned.forEach(g=>{
+    div.innerHTML += `
+      <div class="gameBox">
+        ${g.title} — ${g.genre}<br>
+        <button onclick="download('${g.title}')">Download</button>
+      </div>`;
   });
 }
-
+ 
+// Filters games by title and genre then displays results
 function searchGames(){
   let title = document.getElementById("searchTitle").value.toLowerCase();
   let genre = document.getElementById("searchGenre").value;
-
+ 
   let filtered = games.filter(g=>{
     return (!title || g.title.toLowerCase().includes(title)) &&
            (!genre || g.genre === genre);
   });
-
+ 
   displayGames(filtered);
 }
-
-//fill the admin user table with the registered users
+ 
+// Fill the admin user table with all registered users
 function loadAdmin(){
   if(!currentUser || currentUser.role !== "admin") return;
  
@@ -228,22 +310,44 @@ function loadAdmin(){
   tbody.innerHTML = "";
  
   // Loop through userStore and add a row for each user
-  Object.keys(userStore).forEach((email, i) => {
-    let u = userStore[email];
+  Object.keys(userStore).forEach((username, i) => {
+    let u = userStore[username];
     tbody.innerHTML += `
       <tr>
         <td>${i + 1}</td>
         <td>${u.username}</td>
-        <td>${email}</td>
+        <td>${u.email}</td>
         <td>${u.role}</td>
         <td>${u.purchases.length}</td>
       </tr>`;
   });
 }
-
+ 
+// Adds a new game to the catalogue (admin only)
+function adminAddGame(){
+  let title = document.getElementById("adminTitle").value.trim();
+  let genre = document.getElementById("adminGenre").value;
+  let price = parseFloat(document.getElementById("adminPrice").value);
+ 
+  if(!title || !price){
+    alert("Fill in title and price");
+    return;
+  }
+ 
+  // Generate new id by taking the highest existing id and adding 1
+  let id = Math.max(...games.map(g => g.id)) + 1;
+  games.push({ id, title, genre, price });
+ 
+  document.getElementById("adminTitle").value = "";
+  document.getElementById("adminPrice").value = "";
+  document.getElementById("adminMsg").innerText = `"${title}" added!`;
+  displayGames(games);
+}
+ 
+// Show all games when the page first loads
 displayGames(games);
-
+ 
 </script>
-
+ 
 </body>
 </html>
