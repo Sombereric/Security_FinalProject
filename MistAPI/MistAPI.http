@@ -1,0 +1,6 @@
+@MistAPI_HostAddress = http://localhost:5213
+
+GET {{MistAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
