@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MistAPI.Models
 {
-    public class GamesInApp
+    public class GameInApp
     {
         [Key]
         public int GameID { get; set; }
@@ -26,6 +26,6 @@ namespace MistAPI.Models
         public string? GameGenre { get; set; }
 
         [ForeignKey("PublisherID")]
-        public Publishers? Publisher { get; set; }
+        public Publisher? Publisher { get; set; }
     }
 }

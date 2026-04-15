@@ -16,6 +16,6 @@ namespace MistAPI.Models
         public decimal? PublisherRating { get; set; }
 
         // 🔗 Relationship
-        public List<GamesInApp> Games { get; set; } = new();
+        public List<GameInApp> Games { get; set; } = new();
     }
 }

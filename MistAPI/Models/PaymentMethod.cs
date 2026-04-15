@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MistAPI.Models
 {
-    public class PaymentMethods
+    public class PaymentMethod
     {
         [Key]
         public int PaymentMethodID { get; set; }
@@ -28,6 +28,6 @@ namespace MistAPI.Models
 
         // 🔗 Relationship
         [ForeignKey("UserID")]
-        public Users? User { get; set; }
+        public User? User { get; set; }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace MistAPI.Models
 {
-    public class Users
+    public class User
     {
         [Key]
         public int UserID { get; set; }
@@ -20,7 +20,7 @@ namespace MistAPI.Models
         public string UserPasswordHash { get; set; }
 
         // 🔗 Relationships
-        public List<UserOwnedGames> OwnedGames { get; set; }
-        public List<PaymentMethods> PaymentMethodsList { get; set; }
+        public List<UserOwnedGame> OwnedGames { get; set; }
+        public List<PaymentMethod> PaymentMethodsList { get; set; }
     }
 }

@@ -6,10 +6,21 @@ namespace MistAPI.Data
 {
     public class AppDbContext : DbContext
     {
-        public DbSet<Users> Users { get; set; }
-        public DbSet<Publishers> Publishers { get; set; }
-        public DbSet<GamesInApp> GamesInApp { get; set; }
-        public DbSet<UserOwnedGames> UserOwnedGames { get; set; }
-        public DbSet<PaymentMethods> PaymentMethods { get; set; }
+        public AppDbContext(DbContextOptions<AppDbContext> options)
+            : base(options)
+        {
+        }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Publisher> Publishers { get; set; }
+        public DbSet<GameInApp> GamesInApp { get; set; }
+        public DbSet<UserOwnedGame> UserOwnedGames { get; set; }
+        public DbSet<PaymentMethod> PaymentMethods { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<UserOwnedGame>()
+                .HasKey(uog => new { uog.GameID, uog.UserID });
+        }
     }
 }
