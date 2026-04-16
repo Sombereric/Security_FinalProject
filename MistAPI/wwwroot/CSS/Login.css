@@ -1,0 +1,23 @@
+﻿/* Container for all content */
+.container {
+    background: #2a475e;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+/*login buttons*/
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #c7d5e0;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+}

@@ -1,0 +1,42 @@
+﻿/*Handles the inner container of the website*/
+.container {
+    background: #2a475e;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    width: 100%;
+    max-width: 800px;
+}
+
+/* Game Box Styling */
+.gameBox {
+    background: #171d24;
+    border: 1px solid #3d6b8d;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.game-info b {
+    font-size: 1.2rem;
+    color: white;
+}
+.game-info p {
+    margin: 5px 0;
+    color: #acb2b8;
+    font-size: 0.9rem;
+}
+
+button {
+    padding: 8px 15px;
+    background-color: #47bfff;
+    background: linear-gradient(to bottom, #47bfff 5%, #1a7bb1 100%);
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}

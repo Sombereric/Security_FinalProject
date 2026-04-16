@@ -1,11 +1,34 @@
-﻿<!DOCTYPE html>
+﻿<!--
+// FILE : Register.html
+// PROJECT : SENG2020 - MistApp
+// PROGRAMMER : Zemmat Hagos, Will Jessel, Eric Moutoux
+// FIRST VERSION : 2026-3-10
+// DESCRIPTION :
+// the Register page of the program
+-->
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
-    <title></title>
+    <title>Mist Game Application</title>
+
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/login.css">
 </head>
 <body>
+    <div class="container">
+        <h1>MIST</h1>
+        <div id="register-section">
+            <h2>Create Account</h2>
+            <input type="text" id="regUser" placeholder="Username (Display Name)">
+            <input type="email" id="regEmail" placeholder="Email (Login ID)">
 
+            <input type="password" id="regPass" placeholder="Password (Min 10 chars, 5 special symbols)">
+            <button onclick="register()">Register</button>
+            <div id="regMsg" class="success"></div>
+        </div>
+    </div>
 </body>
 </html>
 
