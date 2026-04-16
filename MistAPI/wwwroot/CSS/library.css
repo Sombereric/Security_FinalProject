@@ -1,0 +1,33 @@
+﻿/*
+// FILE : Main.html
+// PROJECT : SENG2020 - MistApp
+// PROGRAMMER : Zemmat Hagos, Will Jessel, Eric Moutoux
+// FIRST VERSION : 2026-3-10
+// DESCRIPTION :
+// library style sheet for the mist website
+*/
+
+.library-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.library-card {
+    border: 1px solid #444;
+    padding: 16px;
+    border-radius: 8px;
+    width: 260px;
+    background-color: #1e1e1e;
+}
+
+    .library-card h3 {
+        margin-top: 0;
+    }
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

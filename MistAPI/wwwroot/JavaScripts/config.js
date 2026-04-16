@@ -6,7 +6,7 @@
 // A configuration file used to setup the webpage front end settings
 
 const CONFIG = {
-    API_BASE_URL: "https://localhost:7195/api/authentication",
+    API_BASE_URL: "https://localhost:7195/api",
     MAX_LOGIN_ATTEMPTS: 5,
     COOLDOWN_MS: 30000
 };
