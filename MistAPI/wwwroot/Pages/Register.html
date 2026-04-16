@@ -15,26 +15,25 @@
 
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/login.css">
-
-    <script src="../js/config.js"></script>
-    <script src="../js/auth-common.js"></script>
-    <script src="../js/register.js"></script>
 </head>
 <body>
     <div class="container">
         <h1>MIST</h1>
         <div id="register-section">
             <h2>Create Account</h2>
-            <input type="text" id="regUser" placeholder="Username (Display Name)">
-            <input type="email" id="regEmail" placeholder="Email (Login ID)">
-            <input type="password" id="regPass" placeholder="Password (Min 10 chars, 5 special symbols)">
-            <button onclick="register()">Register</button>
+
+            <input type="text" id="regUser" placeholder="Username">
+            <input type="email" id="regEmail" placeholder="Email">
+            <input type="password" id="regPass" placeholder="Password">
+
+            <button id="registerBtn" onclick="register()">Register</button>
             <div id="regMsg"></div>
+
+            <button type="button" onclick="window.location.href='Login.html'">Back to Login</button>
         </div>
     </div>
+    <script src="../JavaScripts/config.js"></script>
+    <script src="../JavaScripts/auth-common.js"></script>
+    <script src="../JavaScripts/register.js"></script>
 </body>
 </html>
-
-<!--
-    A simple create account page
--->

@@ -15,10 +15,6 @@
 
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/login.css">
-
-    <script src="../js/config.js"></script>
-    <script src="../js/auth-common.js"></script>
-    <script src="../js/login.js"></script>
 </head>
 <body>
     <div class="container">
@@ -29,9 +25,11 @@
             <input type="password" id="loginPass" placeholder="Password">
             <button id="loginBtn" onclick="login()">Login</button>
             <div id="loginMsg"></div>
-            <button onclick="Register()">Create Account</button>
-            <div id="RegisterMsg" class="success"></div>
+            <button type="button" onclick="window.location.href='Register.html'">Create Account</button>
         </div>
     </div>
+    <script src="../JavaScripts/config.js"></script>
+    <script src="../JavaScripts/auth-common.js"></script>
+    <script src="../JavaScripts/login.js"></script>
 </body>
 </html>

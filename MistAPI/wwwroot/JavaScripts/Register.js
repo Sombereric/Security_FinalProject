@@ -9,7 +9,6 @@ async function register() {
     const user = scrubInput(document.getElementById("regUser").value);
     const email = scrubInput(document.getElementById("regEmail").value);
     const pass = scrubInput(document.getElementById("regPass").value);
-    const regMsg = document.getElementById("regMsg");
 
     if (!user || !email || !pass) {
         displayFeedback("regMsg", 400, "Please fill in all fields.");
@@ -32,8 +31,9 @@ async function register() {
         password: pass
     };
 
+
     try {
-        regMsg.innerText = "Connecting to server...";
+        displayFeedback("regMsg", 200, "Connecting to server...");
 
         const response = await fetch(`${CONFIG.API_BASE_URL}/register`, {
             method: "POST",
@@ -42,7 +42,10 @@ async function register() {
         });
 
         if (response.ok) {
-            regMsg.innerText = "Registered successfully. You can now log in.";
+            displayFeedback("regMsg", 200, "Registered successfully. You can now log in.");
+            setTimeout(() => {
+                window.location.href = "Login.html";
+            }, 1200);
         } else {
             displayFeedback("regMsg", response.status, "Registration failed.");
         }

@@ -35,7 +35,7 @@ async function login() {
             const userObj = await response.json();
             localStorage.setItem("sessionUser", JSON.stringify(userObj));
 
-            window.location.href = "GameCatelog.html";
+            window.location.href = "Library.html";
         } else {
             loginAttempts++;
             handleRateLimit();
