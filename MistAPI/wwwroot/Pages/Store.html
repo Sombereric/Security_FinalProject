@@ -11,13 +11,40 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title></title>
+    <title>Mist Game Application - Store</title>
+
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/store.css">
 </head>
 <body>
+    <div class="container">
+        <h1>MIST</h1>
 
+        <div class="top-bar">
+            <h2>Store</h2>
+            <div>
+                <button type="button" onclick="window.location.href='Library.html'">Library</button>
+                <button type="button" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <div class="store-controls">
+            <button type="button" onclick="loadGamesByName()">Sort by Name</button>
+            <button type="button" onclick="loadGamesByPrice()">Sort by Price</button>
+
+            <input type="text" id="genreInput" placeholder="Enter genre">
+            <button type="button" onclick="loadGamesByGenre()">Search by Genre</button>
+
+            <input type="text" id="publisherInput" placeholder="Enter publisher name">
+            <button type="button" onclick="loadGamesByPublisher()">Search by Publisher</button>
+        </div>
+
+        <div id="storeMsg"></div>
+        <div id="storeList" class="store-list"></div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/store.js"></script>
 </body>
 </html>
-
-<!--
-    Where browsing and buying games takes place
--->
+Store.js
