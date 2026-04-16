@@ -1,4 +1,13 @@
-﻿/* Container for all content */
+﻿/*
+// FILE : Login.html
+// PROJECT : SENG2020 - MistApp
+// PROGRAMMER : Zemmat Hagos, Will Jessel, Eric Moutoux
+// FIRST VERSION : 2026-3-10
+// DESCRIPTION :
+// login page style sheet
+*/
+
+/* Container for all content */
 .container {
     background: #2a475e;
     padding: 40px;

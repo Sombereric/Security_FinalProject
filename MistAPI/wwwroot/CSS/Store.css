@@ -1,4 +1,13 @@
-﻿/*Handles the inner container of the website*/
+﻿/*
+// FILE : Store.html
+// PROJECT : SENG2020 - MistApp
+// PROGRAMMER : Zemmat Hagos, Will Jessel, Eric Moutoux
+// FIRST VERSION : 2026-3-10
+// DESCRIPTION :
+// store style sheet
+*/
+
+/*Handles the inner container of the website*/
 .container {
     background: #2a475e;
     padding: 30px;
