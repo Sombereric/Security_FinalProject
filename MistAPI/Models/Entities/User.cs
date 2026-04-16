@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MistAPI.Models
+namespace MistAPI.Models.Entities
 {
     public class User
     {
@@ -20,7 +20,15 @@ namespace MistAPI.Models
         public string UserPasswordHash { get; set; }
 
         // 🔗 Relationships
-        public List<UserOwnedGame> OwnedGames { get; set; }
-        public List<PaymentMethod> PaymentMethodsList { get; set; }
+        public List<UserOwnedGame> OwnedGames { get; set; } = new();
+        public List<PaymentMethod> PaymentMethodsList { get; set; } = new();
+
+        public User() { }
+
+        public User (string userName, string email)
+        {
+            UserName = userName;
+            UserEmail = email;
+        }
     }
 }

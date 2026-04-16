@@ -6,7 +6,6 @@
 // Handles all authentication requests from the webpage to the server and database
 
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MistAPI.Data;
@@ -26,24 +25,68 @@ namespace MistAPI.Controllers
         {
             AppDbContext = appDbContext;
         }
+        /// <summary>
+        /// this function allows users to registor new accounts
+        /// </summary>
+        /// <param name="userRegisterRequest">the user account request object</param>
+        /// <returns>the outcome of the account creation request</returns>
         [HttpPost("register")]
         public async Task<ActionResult<AuthenticationResponse>> Register(UserRegisterRequest userRegisterRequest)
         {
             //checks if the email is already in use by another account.
             string emailToCheck = userRegisterRequest.UserEmail;
-            User? existingUser = await AppDbContext.Users.FirstOrDefaultAsync(user => user.UserEmail == emailToCheck);
+            User? userWithSameEmail = await AppDbContext.Users.FirstOrDefaultAsync(user => user.UserEmail == emailToCheck);
             //if the email is returned by the query then a account with that email already exists
-            if (existingUser != null)
-            {
+            if (userWithSameEmail != null){
                 return BadRequest("Email already in use");
             }
 
-            return Ok(userRegisterRequest);
+            //creates a new user object
+            User user = new User(userRegisterRequest.UserName, emailToCheck);
+
+            //hashses the password
+            user.UserPasswordHash = passwordHasher.HashPassword(user, userRegisterRequest.Password);
+
+            //sends the user data to the server
+            AppDbContext.Users.Add(user);
+            await AppDbContext.SaveChangesAsync();
+
+            //builds the response to the browser.
+            AuthenticationResponse authenticationResponse =
+                new AuthenticationResponse(user.UserID, user.UserName, user.UserEmail, "User registered successfully.");
+
+            return Ok(authenticationResponse);
         }
-        [HttpPost("Login")]
-        public async Task<ActionResult<AuthenticationResponse>> Login(UserRegisterRequest userRegisterRequest)
+        /// <summary>
+        /// handles user logins
+        /// </summary>
+        /// <param name="userRegisterRequest">stores user login data</param>
+        /// <returns>returns a login result to the webpage</returns>
+        [HttpPost("login")]
+        public async Task<ActionResult<AuthenticationResponse>> Login(LoginRequest userLoginRequest)
         {
-            return Ok(userRegisterRequest);
+            //checks if the user email and account exists on login attempt
+            User? user = await AppDbContext.Users.FirstOrDefaultAsync(user => user.UserEmail == userLoginRequest.UserEmail);
+
+            //if no user is returned then the email or password is wrong or no account exists
+            if (user == null){
+                return BadRequest("Email already in use");
+            }
+
+            //checks to see if the password is the same
+            PasswordVerificationResult result = passwordHasher.VerifyHashedPassword(
+              user, user.UserPasswordHash, userLoginRequest.Password);
+
+            //handles failed password matches
+            if (result == PasswordVerificationResult.Failed){
+                return Unauthorized("Invalid email or password");
+            }
+
+            //builds response for the webpage to use should login be successful
+            AuthenticationResponse authenticationResponse =
+               new AuthenticationResponse(user.UserID, user.UserName, user.UserEmail, "Login successful.");
+
+            return Ok(authenticationResponse);
         }
     }
 }

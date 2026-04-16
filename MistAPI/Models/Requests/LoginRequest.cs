@@ -14,7 +14,7 @@ namespace MistAPI.Models.Requests
         [Required]
         [MaxLength(255)]
         [EmailAddress]
-        public string UserName { get; set; } = string.Empty;
+        public string UserEmail { get; set; } = string.Empty;
         [Required]
         public string Password { get; set; }
     }

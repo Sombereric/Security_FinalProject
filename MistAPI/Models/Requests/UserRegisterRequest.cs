@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MistAPI.Models.Requests
 {
-    public class RegisterRequest
+    public class UserRegisterRequest
     {
         [Required]
         [MaxLength(50)]

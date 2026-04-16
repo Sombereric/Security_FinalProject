@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MistAPI.Models
+namespace MistAPI.Models.Entities
 {
     public class UserOwnedGame
     {

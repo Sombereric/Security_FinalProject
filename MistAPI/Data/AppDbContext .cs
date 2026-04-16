@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using MistAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using MistAPI.Models.Entities;
 
 namespace MistAPI.Data
 {

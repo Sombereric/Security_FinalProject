@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MistAPI.Models
+namespace MistAPI.Models.Entities
 {
     public class Publisher
     {
