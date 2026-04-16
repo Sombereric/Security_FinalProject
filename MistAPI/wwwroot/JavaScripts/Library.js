@@ -5,7 +5,7 @@
 // DESCRIPTION :
 // all functions related to the users owned library
 
-const sessionUser = JSON.parse(localStorage.getItem("sessionUser");
+const sessionUser = JSON.parse(localStorage.getItem("sessionUser"));
 
 if (!sessionUser) {
     window.location.href = "Login.html";
@@ -30,7 +30,7 @@ async function loadLibrary() {
     libraryList.innerHTML = "";
 
     try {
-        const response = await fetch(`${CONFIG.API_BASE_URL.replace("/authentication", "/library")}/${sessionUser.userID}`);
+        const response = await fetch(`${CONFIG.API_BASE_URL}/Library/${sessionUser.userID}`);
 
         if (!response.ok) {
             libraryMsg.innerText = "Could not load your library.";
@@ -89,7 +89,7 @@ async function downloadGame(gameId) {
     const libraryMsg = document.getElementById("libraryMsg");
 
     try {
-        const response = await fetch(`${CONFIG.API_BASE_URL.replace("/authentication", "/library")}/download`, {
+        const response = await fetch(`${CONFIG.API_BASE_URL.replace("/authentication", "/library")}/Library/download`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

@@ -21,11 +21,11 @@ function logout() {
 }
 
 function getGamesBaseUrl() {
-    return `${CONFIG.API_BASE_URL.replace("/authentication", "/games")}`;
+    return `${CONFIG.API_BASE_URL}/Games`;
 }
 
 function getLibraryBaseUrl() {
-    return `${CONFIG.API_BASE_URL.replace("/authentication", "/library")}`;
+    return `${CONFIG.API_BASE_URL}/Library`;
 }
 
 async function loadGamesByName() {

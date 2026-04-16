@@ -35,7 +35,7 @@ async function register() {
     try {
         displayFeedback("regMsg", 200, "Connecting to server...");
 
-        const response = await fetch(`${CONFIG.API_BASE_URL}/register`, {
+        const response = await fetch(`${CONFIG.API_BASE_URL}/Authentication/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
