@@ -27,6 +27,11 @@ namespace MistAPI.Data
 
             modelBuilder.Entity<UserOwnedGame>()
                 .HasKey(uog => new { uog.GameID, uog.UserID });
+
+            modelBuilder.Entity<GameInApp>()
+                .HasOne(g => g.Publisher)
+                .WithMany(p => p.GamesInApp)
+                .HasForeignKey(g => g.PublisherID);
         }
     }
 }

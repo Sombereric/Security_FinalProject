@@ -25,12 +25,14 @@ namespace MistAPI.Controllers
         /// searches all games sorted by name aphebetically 
         /// </summary>
         /// <returns>returns the list of games found</returns>
-        [HttpGet("name/{name}")]
+        [HttpGet("sort/name")]
         public async Task<ActionResult<IEnumerable<GameInApp>>> GetAllGamesByName()
         {
             //our query builder using parameterized inputs
             List<GameInApp> gamesInApp = await AppDbContext.GamesInApp
-                                         .OrderBy(games => games.GameName).ToListAsync();
+                                         .Include(games => games.Publisher)
+                                         .OrderBy(games => games.GameName)
+                                         .ToListAsync();
 
             return Ok(gamesInApp);
         }
@@ -44,6 +46,7 @@ namespace MistAPI.Controllers
         {
             //our query builder using parameterized inputs
             List<GameInApp> gamesInApp = await AppDbContext.GamesInApp
+                                         .Include(games => games.Publisher)
                                          .Where(games => games.GameGenre != null && games.GameGenre.Contains(genre))
                                          .ToListAsync();
             return Ok(gamesInApp);
@@ -68,6 +71,7 @@ namespace MistAPI.Controllers
 
             //searches for the game by publisher id
             List<GameInApp> gamesInApp = await AppDbContext.GamesInApp
+                                         .Include(games => games.Publisher)
                                          .Where(g => g.PublisherID == publisher.PublisherID)
                                          .ToListAsync();
 
@@ -82,6 +86,7 @@ namespace MistAPI.Controllers
         {
             //searches for all games sorting by price
             List<GameInApp> gamesInApp = await AppDbContext.GamesInApp
+                                         .Include(games => games.Publisher)
                                          .OrderBy(games => games.GamePrice)
                                          .ToListAsync();
             return Ok(gamesInApp);

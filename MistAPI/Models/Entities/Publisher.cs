@@ -7,6 +7,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace MistAPI.Models.Entities
 {
@@ -23,6 +24,7 @@ namespace MistAPI.Models.Entities
         public decimal? PublisherRating { get; set; }
 
         // 🔗 Relationship
-        public List<GameInApp> Games { get; set; } = new();
+        [JsonIgnore]
+        public List<GameInApp> GamesInApp { get; set; } = new();
     }
 }
