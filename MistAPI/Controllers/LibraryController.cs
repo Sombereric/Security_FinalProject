@@ -18,9 +18,11 @@ namespace MistAPI.Controllers
     public class LibraryController : ControllerBase
     {
         private readonly AppDbContext AppDbContext;
+        private logger logToServer;
         public LibraryController(AppDbContext appDbContext)
         {
             AppDbContext = appDbContext;
+            logToServer = new logger(appDbContext);
         }
         /// <summary>
         /// fills the user owned games in the library page
@@ -45,6 +47,10 @@ namespace MistAPI.Controllers
                                            .Include(userOwnedGames => userOwnedGames.Game)
                                            .ThenInclude(game => game.Publisher)
                                            .ToListAsync();
+
+            Log log = new Log(DateTime.Now, "Library searched games", "A user searched all games in their library");
+
+            await logToServer.LogToDb(log);
 
             return Ok(ownedGames);
         }
@@ -93,6 +99,10 @@ namespace MistAPI.Controllers
             AppDbContext.UserOwnedGames.Add(ownedGame);
             await AppDbContext.SaveChangesAsync();
 
+            Log log = new Log(user.UserID, DateTime.Now, "User bought a game", "a user using an email has bought a game: " + user.UserEmail);
+
+            await logToServer.LogToDb(log);
+
             return Ok();
         }
         /// <summary>
@@ -126,6 +136,10 @@ namespace MistAPI.Controllers
             string filePath = Path.Combine(Directory.GetCurrentDirectory(), safeFileName);
 
             await System.IO.File.WriteAllTextAsync(filePath, fileContents);
+
+            Log log = new Log(DateTime.Now, "Downloaded a game", "A user downloaded a game");
+
+            await logToServer.LogToDb(log);
 
             return Ok();
         }

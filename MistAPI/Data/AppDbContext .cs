@@ -21,6 +21,7 @@ namespace MistAPI.Data
         public DbSet<GameInApp> GamesInApp { get; set; }
         public DbSet<UserOwnedGame> UserOwnedGames { get; set; }
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
+        public DbSet<Log> logs { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

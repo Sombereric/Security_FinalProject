@@ -55,6 +55,16 @@ CREATE TABLE PaymentMethods(
         REFERENCES Users(UserID)
 );
 
+CREATE TABLE Logs(
+	LogsID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	UserID INT,
+	LogDate DATE NOT NULL,
+	LogType VARCHAR(50),
+	LogInformation VARCHAR(200),
+	CONSTRAINT FK_Logs_UserID FOREIGN KEY (UserID)
+        REFERENCES Users(UserID)
+);
+
 --note please replaced plain text passwords with hashed passwords
 INSERT INTO Users (UserName, UserEmail, UserPasswordHash) VALUES
 ('alice', 'alice@example.com', 'hashed_password1'),

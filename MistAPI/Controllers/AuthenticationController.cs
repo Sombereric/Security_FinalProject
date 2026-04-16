@@ -8,6 +8,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using MistAPI.Data;
 using MistAPI.Models.Entities;
 using MistAPI.Models.Requests;
@@ -21,9 +23,11 @@ namespace MistAPI.Controllers
     {
         private readonly AppDbContext AppDbContext;
         private readonly PasswordHasher<User> passwordHasher = new();
+        private logger logToServer;
         public AuthenticationController(AppDbContext appDbContext)
         {
             AppDbContext = appDbContext;
+            logToServer = new logger(appDbContext);
         }
         /// <summary>
         /// this function allows users to registor new accounts
@@ -50,6 +54,11 @@ namespace MistAPI.Controllers
             //sends the user data to the server
             AppDbContext.Users.Add(user);
             await AppDbContext.SaveChangesAsync();
+
+            Log log = new Log(user.UserID, DateTime.Now, "User Created", 
+                              "A new user has been created within the system using: " + user.UserEmail);
+
+            await logToServer.LogToDb(log);
 
             //builds the response to the browser.
             AuthenticationResponse authenticationResponse =
@@ -81,6 +90,10 @@ namespace MistAPI.Controllers
             if (result == PasswordVerificationResult.Failed){
                 return Unauthorized("Invalid email or password");
             }
+
+            Log log = new Log(user.UserID, DateTime.Now, "User Login", "A user using this email has logged-in: " + user.UserEmail);
+
+            await logToServer.LogToDb(log);
 
             //builds response for the webpage to use should login be successful
             AuthenticationResponse authenticationResponse =

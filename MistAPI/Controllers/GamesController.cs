@@ -17,9 +17,11 @@ namespace MistAPI.Controllers
     public class GamesController : ControllerBase
     {
         private readonly AppDbContext AppDbContext;
+        private logger logToServer;
         public GamesController(AppDbContext appDbContext)
         {
             AppDbContext = appDbContext;
+            logToServer = new logger(appDbContext);
         }
         /// <summary>
         /// searches all games sorted by name aphebetically 
@@ -33,6 +35,10 @@ namespace MistAPI.Controllers
                                          .Include(games => games.Publisher)
                                          .OrderBy(games => games.GameName)
                                          .ToListAsync();
+
+            Log log = new Log(DateTime.Now, "Searched games", "A user searched all games on the system");
+
+            await logToServer.LogToDb(log);
 
             return Ok(gamesInApp);
         }
@@ -49,6 +55,11 @@ namespace MistAPI.Controllers
                                          .Include(games => games.Publisher)
                                          .Where(games => games.GameGenre != null && games.GameGenre.Contains(genre))
                                          .ToListAsync();
+
+            Log log = new Log(DateTime.Now, "Searched games", "A user searched games by genre on the system");
+
+            await logToServer.LogToDb(log);
+
             return Ok(gamesInApp);
         }
         /// <summary>
@@ -75,6 +86,10 @@ namespace MistAPI.Controllers
                                          .Where(g => g.PublisherID == publisher.PublisherID)
                                          .ToListAsync();
 
+            Log log = new Log(DateTime.Now, "Searched games", "A user searched all games by publisher on the system");
+
+            await logToServer.LogToDb(log);
+
             return Ok(gamesInApp);
         }
         /// <summary>
@@ -89,6 +104,11 @@ namespace MistAPI.Controllers
                                          .Include(games => games.Publisher)
                                          .OrderBy(games => games.GamePrice)
                                          .ToListAsync();
+
+            Log log = new Log(DateTime.Now, "Searched games", "A user searched by price");
+
+            await logToServer.LogToDb(log);
+
             return Ok(gamesInApp);
         }
     }
