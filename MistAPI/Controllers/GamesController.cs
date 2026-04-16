@@ -21,27 +21,70 @@ namespace MistAPI.Controllers
         {
             AppDbContext = appDbContext;
         }
+        /// <summary>
+        /// searches all games sorted by name aphebetically 
+        /// </summary>
+        /// <returns>returns the list of games found</returns>
         [HttpGet("name/{name}")]
         public async Task<ActionResult<IEnumerable<GameInApp>>> GetAllGamesByName()
         {
-            List<GameInApp> gameInApp = await AppDbContext.GamesInApp.OrderBy(games => games.GameName).ToListAsync();
+            //our query builder using parameterized inputs
+            List<GameInApp> gamesInApp = await AppDbContext.GamesInApp
+                                         .OrderBy(games => games.GameName).ToListAsync();
 
-            return Ok();
+            return Ok(gamesInApp);
         }
+        /// <summary>
+        /// searches all games by a genre
+        /// </summary>
+        /// <param name="genre">the genre to search</param>
+        /// <returns>returns the list of games found</returns>
         [HttpGet("genre/{genre}")]
-        public async Task<ActionResult<IEnumerable<GameInApp>>> GetAllGenreGames()
+        public async Task<ActionResult<IEnumerable<GameInApp>>> GetAllGenreGames(string genre)
         {
-            return Ok();
+            //our query builder using parameterized inputs
+            List<GameInApp> gamesInApp = await AppDbContext.GamesInApp
+                                         .Where(games => games.GameGenre != null && games.GameGenre.Contains(genre))
+                                         .ToListAsync();
+            return Ok(gamesInApp);
         }
-        [HttpGet("publisher/{publisherId}")]
-        public async Task<ActionResult<IEnumerable<GameInApp>>> GetAllPublisherGames()
+        /// <summary>
+        /// searching all games by a publisher
+        /// </summary>
+        /// <param name="publisherName">the name of the publisher to search</param>
+        /// <returns>returns the list of games found</returns>
+        [HttpGet("publisher/{publisherName}")]
+        public async Task<ActionResult<IEnumerable<GameInApp>>> GetAllPublisherGames(string publisherName)
         {
-            return Ok();
+            //searches the db for a publisher name using a patramiterized query.
+            Publisher? publisher = await AppDbContext.Publishers
+                                  .FirstOrDefaultAsync(p => p.PublisherName.ToLower() == publisherName.ToLower());
+
+            //returns should no publisher be found
+            if (publisher == null)
+            {
+                return NotFound("Publisher not found.");
+            }
+
+            //searches for the game by publisher id
+            List<GameInApp> gamesInApp = await AppDbContext.GamesInApp
+                                         .Where(g => g.PublisherID == publisher.PublisherID)
+                                         .ToListAsync();
+
+            return Ok(gamesInApp);
         }
+        /// <summary>
+        /// search games sorted by price
+        /// </summary>
+        /// <returns>returns the sorted list of games</returns>
         [HttpGet("sort/price")]
         public async Task<ActionResult<IEnumerable<GameInApp>>> GetGamesBySortPrice()
         {
-            return Ok();
+            //searches for all games sorting by price
+            List<GameInApp> gamesInApp = await AppDbContext.GamesInApp
+                                         .OrderBy(games => games.GamePrice)
+                                         .ToListAsync();
+            return Ok(gamesInApp);
         }
     }
 }
