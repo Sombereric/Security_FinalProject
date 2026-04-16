@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mist Game Application</title>
+    <style>
+        /* Modern Reset & Center Layout */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1b2838; /* Classic "gaming" dark blue */
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* Container for all content */
+        .container {
+            background: #2a475e;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 { margin-bottom: 30px; font-size: 3rem; color: #66c0f4; }
+        h2 { margin-top: 20px; font-size: 1.2rem; }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 4px;
+            border: none;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #c7d5e0;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover { background-color: #66c0f4; color: white; }
+
+        .success { color: #a3ffac; margin-top: 10px; font-size: 0.9em; }
+        hr { border: 0; border-top: 1px solid #3d6b8d; margin: 30px 0; }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>MIST</h1>
+
+    <div id="register-section">
+    <h2>Create Account</h2>
+    <input type="text" id="regUser" placeholder="Username (Display Name)">
+    <input type="email" id="regEmail" placeholder="Email (Login ID)">
+    
+    <select id="regCountry">
+        <option value="">Select Country of Residence</option>
+        <option value="USA">United States (USD)</option>
+        <option value="CAN">Canada (CAD)</option>
+    </select>
+
+    <input type="password" id="regPass" placeholder="Password (Min 10 chars, 5 special symbols)">
+    <button onclick="register()">Register</button>
+    <div id="regMsg" class="success"></div>
+</div>
+
+    <hr>
+
+    <div id="login-section">
+        <h2>Member Login</h2>
+        <input type="email" id="loginEmail" placeholder="Email">
+        <input type="password" id="loginPass" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <div id="loginMsg" class="success"></div>
+    </div>
+</div>
+<script src="config.js"></script>
+<script>
+    // Global variable to track the session
+    let currentUser = null;
+    let loginAttempts = 0;
+    let isLockedOut = false;
+
+    // --- HELPER FUNCTIONS ---
+
+    function scrubInput(text) {
+        if (typeof text !== 'string') return text;
+        let clean = text.trim();
+        clean = clean.replace(/[;<>"-]/g, "");
+        return clean;
+    }
+
+    function displayFeedback(targetId, statusCode, rawMessage) {
+        const secureDiv = document.getElementById(targetId);
+        if (!secureDiv) return;
+        
+        let displayMsg = "";
+        if (statusCode === 401 || statusCode === 403) {
+            displayMsg = "Invalid credentials.";
+        } else if (statusCode === 429) {
+            displayMsg = "Too many attempts. Wait 30 seconds.";
+        } else if (statusCode === 500) {
+            displayMsg = "Server error. Try again later.";
+        } else {
+            displayMsg = rawMessage;
+        }
+        secureDiv.innerText = displayMsg;
+    }
+
+    function handleRateLimit() {
+        if (loginAttempts >= CONFIG.MAX_LOGIN_ATTEMPTS) {
+            isLockedOut = true;
+            const btn = document.querySelector("button[onclick='login()']");
+            if(btn) btn.style.opacity = "0.5";
+
+            setTimeout(() => {
+                isLockedOut = false;
+                loginAttempts = 0;
+                if(btn) btn.style.opacity = "1";
+                displayFeedback("loginMsg", 200, "You may try to login again.");
+            }, CONFIG.COOLDOWN_MS);
+        }
+    }
+
+    // --- MAIN FUNCTIONS ---
+
+    async function register() {
+        // 1. GATHER AND SCRUB
+        let user = scrubInput(document.getElementById("regUser").value);
+        let email = scrubInput(document.getElementById("regEmail").value);
+        let pass = scrubInput(document.getElementById("regPass").value);
+        let country = scrubInput(document.getElementById("regCountry").value);
+        let regMsg = document.getElementById("regMsg");
+
+        // 2. VALIDATION (The "Gatekeeper")
+        if (!user || !email || !pass || !country) {
+            alert("Please fill in all fields.");
+            return;
+        }
+
+        const specialChars = pass.match(/[^a-zA-Z0-9]/g) || [];
+        if (pass.length < 10 || specialChars.length < 5) {
+            alert("Password Requirements:\n- Min 10 characters\n- At least 5 special symbols");
+            return;
+        }
+
+        // 3. SEND TO API
+        const payload = { username: user, email: email, password: pass, country: country };
+
+        try {
+            regMsg.innerText = "Connecting to server...";
+            const response = await fetch(`${CONFIG.API_BASE_URL}/register`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                alert("Account created successfully!");
+                regMsg.innerText = "Registered! You can now login.";
+            } else {
+                displayFeedback("regMsg", response.status, "Registration failed.");
+            }
+        } catch (error) {
+            console.error("Connection failed:", error);
+            alert("Could not connect to the API. Is your server running?");
+            displayFeedback("regMsg", 500, "Connection failed.");
+        }
+    }
+
+    async function login() {
+        if (isLockedOut) {
+            displayFeedback("loginMsg", 429, "");
+            return;
+        }
+
+        let email = scrubInput(document.getElementById("loginEmail").value);
+        let pass = scrubInput(document.getElementById("loginPass").value);
+
+        try {
+            const response = await fetch(`${CONFIG.API_BASE_URL}/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password: pass })
+            });
+
+            if (response.ok) {
+                loginAttempts = 0;
+                const userObj = await response.json();
+                localStorage.setItem("sessionUser", JSON.stringify(userObj));
+                window.location.href = "GameCatelog.html";
+            } else {
+                loginAttempts++;
+                handleRateLimit();
+                displayFeedback("loginMsg", response.status, "Invalid Login.");
+            }
+        } catch (error) {
+            displayFeedback("loginMsg", 500, "");
+        }
+    }
+</script>
+
+</body>
+</html>

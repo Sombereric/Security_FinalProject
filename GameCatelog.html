@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mist Game Catalog</title>
+    <style>
+        /* Modern Reset & Mist Dark Theme */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1b2838; /* Classic gaming dark blue */
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: #2a475e;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        h1 { text-align: center; color: #66c0f4; font-size: 2.5rem; margin-bottom: 20px; }
+        h2 { border-bottom: 2px solid #3d6b8d; padding-bottom: 10px; color: #66c0f4; margin-top: 30px; }
+
+        /* Search Bar Area */
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input, select {
+            flex: 1;
+            padding: 10px;
+            border-radius: 4px;
+            border: none;
+            background: #171d24;
+            color: white;
+        }
+
+        /* Game Box Styling */
+        .gameBox {
+            background: #171d24;
+            border: 1px solid #3d6b8d;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .game-info b { font-size: 1.2rem; color: white; }
+        .game-info p { margin: 5px 0; color: #acb2b8; font-size: 0.9rem; }
+
+        button {
+            padding: 8px 15px;
+            background-color: #47bfff;
+            background: linear-gradient(to bottom, #47bfff 5%, #1a7bb1 100%);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover { background: #66c0f4; }
+        
+        .owned-badge { color: #a3ffac; font-weight: bold; }
+        
+        #library {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .lib-item { background: #3d6b8d; padding: 10px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>MIST CATALOG</h1>
+
+    <div class="search-box">
+        <input type="text" id="searchTitle" placeholder="Search by title..." onkeyup="searchGames()">
+        <select id="searchGenre" onchange="searchGames()">
+            <option value="">All Genres</option>
+            <option>Action</option>
+            <option>FPS</option>
+            <option>RPG</option>
+            <option>Simulation</option>
+            <option>Sports</option>
+            <option>Survival</option>
+        </select>
+    </div>
+
+    <h2>Available Games</h2>
+    <div id="games"></div>
+
+    <h2>Your Library</h2>
+    <div id="library"></div>
+</div>
+<script src="config.js"></script>
+<script>
+// DATA
+let currentUser = "Player1"; // This would normally come from your login logic
+let games = [
+    {id: 1, title: "Apex Legends", genre: "FPS", price: 10.00},
+    {id: 2, title: "ARK: Survival Evolved", genre: "Survival", price: 60.00},
+    {id: 3, title: "Batman: Arkham Asylum", genre: "Simulation", price: 45.00},
+    {id: 4, title: "Call of Duty: Modern Warfare 2", genre: "FPS", price: 60.00},
+    {id: 5, title: "CS:GO", genre: "FPS", price: 15.00},
+    {id: 6, title: "Factorio", genre: "Simulation", price: 35.00},
+    {id: 7, title: "From the Depths", genre: "Simulation", price: 24.00},
+    {id: 8, title: "GoldenEye", genre: "FPS", price: 60.00},
+    {id: 9, title: "Guitar Hero: World Tour", genre: "Simulation", price: 35.00},
+    {id: 10, title: "Halo: ODST", genre: "FPS", price: 50.00},
+    {id: 11, title: "LEGO Star Wars Complete Saga", genre: "Simulation", price: 100.00},
+    {id: 12, title: "NBA 2K26", genre: "Sports", price: 60.00},
+    {id: 13, title: "Pokemon Pearl", genre: "RPG", price: 30.00},
+    {id: 14, title: "Red Dead Redemption 2", genre: "RPG", price: 80.00},
+    {id: 15, title: "Space Engineers", genre: "Simulation", price: 32.71},
+    {id: 16, title: "Super Mario 64", genre: "RPG", price: 25.00},
+    {id: 17, title: "Super Mario Sunshine", genre: "RPG", price: 50.00},
+    {id: 18, title: "Tetris", genre: "Sports", price: 1.00},
+    {id: 19, title: "The Legend of Zelda: Breath of the Wild", genre: "RPG", price: 85.00},
+    {id: 20, title: "The Legend of Zelda: Twilight Princess", genre: "RPG", price: 50.00},
+    {id: 21, title: "Valorant", genre: "FPS", price: 15.00}
+];
+function scrubInput(text) {
+    if (typeof text !== 'string') return text;
+    
+    // 1. Remove whitespace from both ends
+    let clean = text.trim();
+    
+    // 2. Regex to remove ; < > and "
+    // This prevents breaking SQL queries or injecting HTML tags
+    clean = clean.replace(/[;<>"]/g, "");
+    
+    return clean;
+}
+
+// Example usage in your register function:
+// let cleanEmail = scrubInput(document.getElementById("regEmail").value);
+
+// LOGIC
+function displayGames(list) {
+    let div = document.getElementById("games");
+    if (!div) return;
+    div.innerHTML = "";
+
+    list.forEach(g => {
+        let owned = localStorage.getItem(currentUser + "_game_" + g.id);
+
+        div.innerHTML += `
+            <div class="gameBox">
+                <div class="game-info">
+                    <b>${g.title}</b>
+                    <p>${g.genre} • $${g.price}</p>
+                </div>
+                <div>
+                    ${owned ? '<span class="owned-badge">✅ Owned</span>' : `<button onclick="buy(${g.id})">Buy Now</button>`}
+                </div>
+            </div>
+        `;
+    });
+}
+
+function buy(gameId) {
+    if (!currentUser) {
+        alert("Please login first!");
+        return;
+    }
+    localStorage.setItem(currentUser + "_game_" + gameId, "true");
+    displayGames(games);
+    loadLibrary();
+}
+
+function loadLibrary() {
+    let div = document.getElementById("library");
+    if (!div) return;
+    div.innerHTML = "";
+
+    let ownedCount = 0;
+    games.forEach(g => {
+        if (localStorage.getItem(currentUser + "_game_" + g.id)) {
+            div.innerHTML += `<div class="lib-item">🎮 ${g.title}</div>`;
+            ownedCount++;
+        }
+    });
+
+    if (ownedCount === 0) div.innerHTML = "<p>Your library is empty.</p>";
+}
+
+function searchGames() {
+    let title = scrubInput(document.getElementById("searchTitle").value.toLowerCase());
+    let genre = document.getElementById("searchGenre").value;
+
+    let filtered = games.filter(g => {
+        return (!title || g.title.toLowerCase().includes(title)) &&
+               (!genre || g.genre === genre);
+    });
+
+    displayGames(filtered);
+}
+
+window.onload = function() {
+    displayGames(games);
+    loadLibrary();
+};
+</script>
+
+</body>
+</html>
