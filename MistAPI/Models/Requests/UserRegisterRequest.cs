@@ -4,6 +4,7 @@
 // FIRST VERSION : 2026-3-10
 // DESCRIPTION :
 // This is a object file that holds creating new accounts
+
 using System.ComponentModel.DataAnnotations;
 
 namespace MistAPI.Models.Requests

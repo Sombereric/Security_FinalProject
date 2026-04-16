@@ -1,4 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// FILE : PaymentMethod.cs
+// PROJECT : SENG2020 - MistApp
+// PROGRAMMER : Zemmat Hagos, Will Jessel, Eric Moutoux
+// FIRST VERSION : 2026-3-10
+// DESCRIPTION :
+// Payment methods for the user
+
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MistAPI.Models.Entities

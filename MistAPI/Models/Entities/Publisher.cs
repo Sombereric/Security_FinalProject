@@ -1,4 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// FILE : Publisher.cs
+// PROJECT : SENG2020 - MistApp
+// PROGRAMMER : Zemmat Hagos, Will Jessel, Eric Moutoux
+// FIRST VERSION : 2026-3-10
+// DESCRIPTION :
+// Publishers for the games within the store
+
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MistAPI.Models.Entities

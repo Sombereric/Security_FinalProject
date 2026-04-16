@@ -1,4 +1,10 @@
-﻿using System.Collections.Generic;
+﻿// FILE : AppDbContext.cs
+// PROJECT : SENG2020 - MistApp
+// PROGRAMMER : Zemmat Hagos, Will Jessel, Eric Moutoux
+// FIRST VERSION : 2026-3-10
+// DESCRIPTION :
+// Where the database context is stored
+
 using Microsoft.EntityFrameworkCore;
 using MistAPI.Models.Entities;
 
